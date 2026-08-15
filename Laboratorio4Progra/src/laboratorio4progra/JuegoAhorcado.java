@@ -11,5 +11,5 @@ package laboratorio4progra;
  */
 public interface JuegoAhorcado {
     void establecerPalabraSecreta(String palabra);
-    void jugarPartida(char letra) throws LetraInvalidaException, LetraRepetidaException;
+    void jugarPartida(char letra) throws FormatoCaracterInvalidoException, IntentoLetraDuplicadoException;
 }
