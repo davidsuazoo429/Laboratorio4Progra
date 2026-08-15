@@ -30,17 +30,24 @@ public abstract class AhorcadoBase implements JuegoAhorcado {
     }
     
     @Override
-    public void establecerPalabraSecreta(String palabra){
-        if (palabra == null || palabra.trim().isEmpty()) {
-            palabra = "JAVA";
+    public void establecerPalabraSecreta(String palabra) {
+        if (palabra == null) {
+            palabra = "";
         }
-        this.palabraSecreta = palabra.toUpperCase().trim();
-        this.palabraSecretaSinTildes = quitarTildes(this.palabraSecreta);
+        
+        // Convertir a mayúsculas y quitar espacios
+        String palabraMayus = palabra.toUpperCase().trim();
+        
+        // Remover tildes de las vocales manteniendo intacta la Ñ
+        String sinTildes = java.text.Normalizer.normalize(palabraMayus, java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        
+        this.palabraSecreta = sinTildes;
         this.palabraMostrada = new char[palabraSecreta.length()];
         Arrays.fill(this.palabraMostrada, '_');
         
-        for(int i = 0; i < palabraSecreta.length(); i++){
-            if(palabraSecreta.charAt(i) == ' '){
+        for (int i = 0; i < palabraSecreta.length(); i++) {
+            if (palabraSecreta.charAt(i) == ' ') {
                 palabraMostrada[i] = ' ';
             }
         }
