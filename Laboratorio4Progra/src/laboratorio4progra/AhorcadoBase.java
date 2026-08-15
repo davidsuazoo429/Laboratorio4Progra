@@ -35,10 +35,8 @@ public abstract class AhorcadoBase implements JuegoAhorcado {
             palabra = "";
         }
         
-        // Convertir a mayúsculas y quitar espacios
         String palabraMayus = palabra.toUpperCase().trim();
         
-        // Remover tildes de las vocales manteniendo intacta la Ñ
         String sinTildes = java.text.Normalizer.normalize(palabraMayus, java.text.Normalizer.Form.NFD)
                 .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
         
