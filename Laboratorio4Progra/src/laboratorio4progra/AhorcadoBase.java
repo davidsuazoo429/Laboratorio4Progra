@@ -39,17 +39,16 @@ public abstract class AhorcadoBase implements JuegoAhorcado {
     }
     
     @Override
-    public void jugarPartida(char letra) throws FormatoCaracterInvalidoException, IntentoLetraDuplicadoException {
+    public void jugarPartida(char letra) throws CaracterInvalidoException, LetraDuplicadaException {
         char letraMayus = Character.toUpperCase(letra);
 
         if (!Character.isLetter(letraMayus)) {
-            throw new FormatoCaracterInvalidoException("Debe ingresar un carácter alfabético válido.");
+            throw new CaracterInvalidoException("Debe ingresar un caracter del alfabeto que sea valido.");
         }
 
         if (letrasIngresadas.contains(letraMayus)) {
-            throw new IntentoLetraDuplicadoException("Ya intentaste con la letra '" + letraMayus + "'.");
+            throw new LetraDuplicadaException(letraMayus);      
         }
-
         letrasIngresadas.add(letraMayus);
 
         if (verificarLetra(letraMayus)) {

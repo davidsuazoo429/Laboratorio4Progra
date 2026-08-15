@@ -10,14 +10,19 @@ public class VentanaPrincipal extends JFrame {
 
     private JPanel panelContenedor;
     private CardLayout cardLayout;
-
+    private AdministrarPalabras administrador;
+    private AhorcadoBase juegoActual;
+    private JLabel lblGuiones;
+    private JPanel panelTeclado;
+    
     public VentanaPrincipal() {
         setTitle("El Ahorcado");
         setSize(900, 650);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
-
+        
+        administrador = new AdministrarPalabras();
         cardLayout = new CardLayout();
         panelContenedor = new JPanel(cardLayout);
 
@@ -59,8 +64,11 @@ public class VentanaPrincipal extends JFrame {
         panel.add(btnSalir, gbc);
 
   
-        btnEmpezar.addActionListener(e -> cardLayout.show(panelContenedor, "JUEGO"));
-        btnSalir.addActionListener(e -> System.exit(0));
+        btnEmpezar.addActionListener(e -> {
+                iniciarNuevaPartida();
+                cardLayout.show(panelContenedor, "JUEGO"); 
+        });
+                btnSalir.addActionListener(e -> System.exit(0));
 
         return panel;
     }
@@ -71,7 +79,6 @@ public class VentanaPrincipal extends JFrame {
         panel.setBackground(new Color(245, 247, 250));
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        
         JPanel panelTop = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         panelTop.setOpaque(false);
         JButton btnVolver = new JButton("Volver al Menú");
@@ -79,17 +86,15 @@ public class VentanaPrincipal extends JFrame {
         panelTop.add(btnVolver);
         panel.add(panelTop, BorderLayout.NORTH);
 
- 
         JPanel panelCentro = new JPanel(new GridLayout(1, 2, 20, 0));
         panelCentro.setOpaque(false);
 
-        // Horca vacía
         panelCentro.add(new PanelHorca());
 
-        
         JPanel panelPalabra = new JPanel(new GridBagLayout());
         panelPalabra.setOpaque(false);
-        JLabel lblGuiones = new JLabel("_ _ _ _ _ _ _");
+        
+        lblGuiones = new JLabel("_ _ _ _ _ _ _");
         lblGuiones.setFont(new Font("Monospaced", Font.BOLD, 36));
         lblGuiones.setForeground(new Color(41, 128, 185));
         panelPalabra.add(lblGuiones);
@@ -97,25 +102,69 @@ public class VentanaPrincipal extends JFrame {
         panelCentro.add(panelPalabra);
         panel.add(panelCentro, BorderLayout.CENTER);
 
-    
-        JPanel panelTeclado = new JPanel(new GridLayout(3, 9, 5, 5));
+        panelTeclado = new JPanel(new GridLayout(3, 9, 5, 5));
         panelTeclado.setOpaque(false);
-
-        char[] letras = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".toCharArray();
-        for (char letra : letras) {
-            JButton btn = new JButton(String.valueOf(letra));
-            btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
-            btn.setFocusable(false);
         
-            panelTeclado.add(btn);
-        }
 
         panel.add(panelTeclado, BorderLayout.SOUTH);
 
         return panel;
     }
+    private void actualizarTeclado() {
+        panelTeclado.removeAll();
+        char[] letras = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".toCharArray();
+        for (char letra : letras) {
+            JButton btn = new JButton(String.valueOf(letra));
+            btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
+            btn.setFocusable(false);
 
-  
+            if (juegoActual != null && juegoActual.getLetrasIngresadas().contains(letra)) {
+                btn.setEnabled(false);
+            }
+
+            btn.addActionListener(e -> {
+                try {
+                    juegoActual.jugarPartida(letra);
+                    btn.setEnabled(false);
+                    lblGuiones.setText(juegoActual.getPalabraMostrada().replace("", " ").trim());
+
+                    if (juegoActual.determinarGanador()) {
+                        JOptionPane.showMessageDialog(this, "¡Felicidades, ganaste!");
+                        cardLayout.show(panelContenedor, "MENU");
+                    } else if (juegoActual.determinarPerdedor()) {
+                        JOptionPane.showMessageDialog(this, "¡Perdiste! La palabra era: " + juegoActual.getPalabraSecreta());
+                        cardLayout.show(panelContenedor, "MENU");
+                    }
+                } catch (CaracterInvalidoException | LetraDuplicadaException ex) {
+                    JOptionPane.showMessageDialog(this, ex.getMessage());
+                }
+            });
+
+            panelTeclado.add(btn);
+        }
+        panelTeclado.revalidate();
+        panelTeclado.repaint();
+    }
+    private void iniciarNuevaPartida() {
+        String[] opciones = {"Palabra al Azar", "Palabra Fija"};
+        int seleccion = JOptionPane.showOptionDialog(
+            this, "Seleccione la modalidad de juego:", "Modo de Juego",
+            JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]
+        );
+
+        if (seleccion == 0) {
+            juegoActual = new PalabraAlAzar(administrador);
+        } else {
+            String palabraFija = JOptionPane.showInputDialog(this, "Ingrese la palabra secreta:");
+            if (palabraFija == null || palabraFija.trim().isEmpty()) {
+                palabraFija = "JAVA";
+            }
+            juegoActual = new PalabraFija(palabraFija);
+        }
+
+        lblGuiones.setText(juegoActual.getPalabraMostrada().replace("", " ").trim());
+        actualizarTeclado();
+    }
     private static class PanelHorca extends JPanel {
         public PanelHorca() {
             setBackground(Color.WHITE);

@@ -21,21 +21,22 @@ public class AdministrarPalabras {
         this.palabrasDisponibles = new ArrayList<>();
         this.random = new Random();
         
+        
         palabrasDisponibles.add("manzana");
         palabrasDisponibles.add("pera");
         palabrasDisponibles.add("fruta");
         palabrasDisponibles.add("ingeniero");
     }
 
-    public void agregarPalabra(String palabra) throws RegistroPalabraExistenteException {
+    public void agregarPalabra(String palabra) throws PalabraExistenteException {
         if (palabra == null || palabra.trim().isEmpty()) {
-            throw new RegistroPalabraExistenteException("La palabra no puede estar vacía.");
+            throw new PalabraExistenteException("palabra vacia, debe de ingresar una palabra");
         }
         
         String palabraMayus = palabra.toUpperCase().trim();
         
         if (palabrasDisponibles.contains(palabraMayus)) {
-            throw new RegistroPalabraExistenteException("La palabra '" + palabraMayus + "' ya existe en la colección.");
+            throw new PalabraExistenteException("La palabra: " + palabraMayus + " ya existe en el diccionario de palabras.");
         }
         
         palabrasDisponibles.add(palabraMayus);
@@ -43,7 +44,7 @@ public class AdministrarPalabras {
 
     public String obtenerPalabraAlAzar() {
         if (palabrasDisponibles.isEmpty()) {
-            return "DEFAULT";
+            return "pasar";
         }
         return palabrasDisponibles.get(random.nextInt(palabrasDisponibles.size()));
     }
