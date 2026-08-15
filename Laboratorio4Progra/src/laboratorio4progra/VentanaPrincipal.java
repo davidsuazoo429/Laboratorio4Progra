@@ -83,7 +83,7 @@ public class VentanaPrincipal extends JFrame {
         JPanel panelCentro = new JPanel(new GridLayout(1, 2, 20, 0));
         panelCentro.setOpaque(false);
 
-        // Horca vacía
+       
         panelCentro.add(new PanelHorca());
 
         
@@ -132,11 +132,11 @@ public class VentanaPrincipal extends JFrame {
             int w = getWidth();
             int h = getHeight();
 
-            // Dibujo únicamente de la estructura de la horca y la cuerda
-            g2.drawLine(20, h - 30, w - 20, h - 30); // Base
-            g2.drawLine(60, h - 30, 60, 30);        // Poste vertical
-            g2.drawLine(60, 30, w / 2, 30);         // Barra superior
-            g2.drawLine(w / 2, 30, w / 2, 60);      // Cuerda
+            
+            g2.drawLine(20, h - 30, w - 20, h - 30); 
+            g2.drawLine(60, h - 30, 60, 30);        
+            g2.drawLine(60, 30, w / 2, 30);        
+            g2.drawLine(w / 2, 30, w / 2, 60);    
         }
     }
 
